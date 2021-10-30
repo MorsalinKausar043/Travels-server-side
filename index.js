@@ -76,7 +76,6 @@ async function run() {
             const show_api = await ServiceCollection.find({}).toArray();
             res.send(show_api);
         })
-    //  
     }
     finally
     {
