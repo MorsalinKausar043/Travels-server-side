@@ -1,5 +1,6 @@
 const express = require('express');
 const { MongoClient } = require('mongodb');
+const ObjectId = require('mongodb').ObjectId;
 require("dotenv").config();
 const app = express();
 const cors = require('cors');
@@ -22,19 +23,51 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run() {
     try {
       await client.connect();
-      const database = client.db("Tevily");
-      const ServiceCollection = database.collection("Services");
-      // create a document to insert
-      const doc = {
-        title: "hello world this is express js new database and updata api get data",
-        content: "No bytes, no problem. Just insert a document, in MongoDB",
-        }
+        const database = client.db("Tevily");
+        const ServiceCollection = database.collection("Services");
+        const cartColletcion = database.collection("cart");
         
         // post api data --------------------------> 
         app.post("/services", async (req, res) => {
             const result = await ServiceCollection.insertOne(req.body);
-            console.log(`A document was inserted with the _id: ${result.insertedId}`);
             res.json(result);
+        })
+
+        // cart post data -------------------------->
+
+        app.post("/cart", async (req, res) => {
+            const result = await cartColletcion.insertOne(req.body)
+            res.json(result);
+        })
+        
+        // delete cart data ---------------->
+
+        app.delete("/cart/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = {_id : ObjectId(id)}
+            const result = await cartColletcion.deleteOne(query);
+            res.json(result);
+        })
+
+        // update cart data --------------------------->
+
+        app.put("/cart/:id", async (req, res) => {
+            const id = req.params.id;
+            const updateStatus = req.body;
+            const options = { upsert: true };
+            const query = { _id: ObjectId(id) };
+            const updatePackage = {
+                $set: { status: "Approved" }
+            }
+            const result = await cartColletcion.updateOne(query,updatePackage,options);
+            res.json(result);
+        })
+
+        // cart get ----------------->
+
+        app.get("/cart", async (req, res) => {
+            const show_result = await cartColletcion.find({}).toArray();
+            res.send(show_result);
         })
 
         // get api data ------------------------->
