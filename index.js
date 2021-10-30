@@ -14,7 +14,7 @@ app.use(express.json());
 // mongodb start ------------------------------->
 
 app.get("/", (req, res) => {
-    res.send("hello world this is home page at express js!")
+    res.send("hello world this is home page from express js!")
 });
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.lvyry.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
